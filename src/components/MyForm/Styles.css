@@ -1,0 +1,27 @@
+.form-page {
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    font-size: calc(10px + 2vmin);
+    text-align: center;
+    color: white;
+}
+.home-form {
+    display: flex;
+    flex-direction: column;
+}
+.date-input-field {
+    margin: 16px;
+}
+.text-input-field{
+    margin: 16px;
+}
+.checkbox{
+    padding: 16;
+}
+.checkbox-wrapper{
+    display: flex;
+    flex-direction: column
+}
