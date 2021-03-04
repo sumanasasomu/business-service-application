@@ -1,4 +1,5 @@
 import React from 'react';
+import axios from 'axios';
 import { useHistory } from "react-router-dom";
 
 import { TextField } from '@material-ui/core';
@@ -41,10 +42,17 @@ const MyForm = (props) => {
 
   const onSubmitForm = () => {
     console.log("The form values are:", state)
-    history.push('/page2');
+    // fetch('http://127.0.0.1:5000/api/hello').then(resp => resp.json()).then((data) => {console.log("Date recieved", data)})
+    // fetch('http://127.0.0.1:5000/api/hola', {
+    //   method: 'post',
+    //   body: JSON.stringify(state)
+    //  });
+    axios.get('http://127.0.0.1:5000/api/hello')
+        .then(response => console.log("Response is ", response.data));
+    axios.post('http://127.0.0.1:5000/api/hola', state);
   }
   return (
-    <div className={"form-page"}>
+    <div className={"form-page"} method="post">
     <form onSubmit={onSubmitForm} className={"home-form"} noValidate autoComplete="off">
       <TextField name={'customerName'} onChange={handleInputChange} style={formStyle.textInputFieldStyle} id="customer-name" required={true} label="Customer name" variant="outlined" />
       <TextField name={'customerPhone'} onChange={handleInputChange} style={formStyle.textInputFieldStyle} id="customer-phone" required={true} label="Customer contact" variant="outlined" />
