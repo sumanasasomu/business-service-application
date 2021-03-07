@@ -1,13 +1,33 @@
 import React from 'react';
 import ReactDOM from 'react-dom';
 import './index.css';
-import App from './App';
-import reportWebVitals from './reportWebVitals';
+import { BrowserRouter, Switch } from 'react-router-dom'
+import Form2 from 'screens/Form2';import reportWebVitals from './reportWebVitals';
+import App from 'App';
+import configureStore from 'reducers/store1';
+import { Provider } from 'react-redux'
+import { statePrototype } from 'utils/constants';
+
+const initialState = statePrototype;
+let store = configureStore(initialState)
+
+const routing = (
+  <Provider store={store}>
+    <BrowserRouter>
+      <Switch>
+        <BrowserRouter exact path="/" component={App}>
+          <App />
+        </BrowserRouter>
+        <BrowserRouter path="/Form2" component={Form2}>
+          <Form2 />
+        </BrowserRouter>
+      </Switch>
+    </BrowserRouter>
+  </Provider>
+)
 
 ReactDOM.render(
-  <React.StrictMode>
-      <App />
-  </React.StrictMode>,
+  routing,
   document.getElementById('root')
 );
 

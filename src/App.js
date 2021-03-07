@@ -1,14 +1,21 @@
+import React from 'react';
 import './App.css';
-import { BrowserRouter as Router, Route, Switch, Redirect} from 'react-router-dom'
 
-import MyForm from './components/MyForm'
+import Form1 from 'screens/Form1';
 
-function App() {
+// const linking = {
+//   prefixes: ['https://localhost:3000'],
+//   config: {
+//     screens: {
+//       Form1: '',
+//       Form2: '/form2',
+//     }
+//   },
+// };
+
+function App(props) {
   return (
-    <Router>
-      <Route exact path="/" component={MyForm} />
-      <Route path="/page2" component={MyForm} />
-    </Router>
+    <Form1 {...props}/>
   );
 }
 

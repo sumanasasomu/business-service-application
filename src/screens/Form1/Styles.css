@@ -1,0 +1,23 @@
+.form-page {
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    font-size: calc(10px + 2vmin);
+    text-align: center;
+    color: white;
+}
+.page-title {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    font-size: 40px;
+    color: #5a2c84;
+    margin-bottom: 40px;
+    text-align: center;
+}
+.logo-image {
+    margin: 40px
+}
