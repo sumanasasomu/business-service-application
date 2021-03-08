@@ -102,10 +102,10 @@ def registerPayment():
 								amount, payment_type, 
 								is_payment_done, payment_id)
 							values (\'{}\', {}, \'{}\', {}, {}, {}, {}, {}, \'{}\');
-							select LAST_INSERT_ID();
 						""".format(date, customer_id, vehicle_id, services, isTyreSale, \
 							totalAmount, payment_type, isPaymentDone, paymentId))
 			conn.commit()
+			cur.execute("select LAST_INSERT_ID();")
 			transaction_id = cur.fetchall()[0][0]
 			if isTyreSale:
 				tyreSize = data.get('tyreSize')
@@ -125,6 +125,18 @@ def registerPayment():
 			return {'result': 'success'}
 		except:
 			return {'result': 'failed'}
+
+@app.route('/api/test', methods=['POST'])
+def autoIncrementTest():
+	data = request.form
+	print(data)
+	brand_name = data.get('brandName')
+	cur.execute("insert into tyre_brand (brand_name) values (\'{}\');".format(brand_name))
+	conn.commit()
+	cur.execute("select LAST_INSERT_ID();")
+	res = cur.fetchall()
+	print(res[0][0])
+	return {'result':str(res)}
 
 if __name__ == "__main__":
 	app.run(host="localhost", port=5002, debug=True)
