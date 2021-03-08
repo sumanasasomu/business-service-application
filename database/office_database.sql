@@ -59,12 +59,11 @@ CREATE TABLE office_database.stock (
 	tyre_id              int  NOT NULL  AUTO_INCREMENT  PRIMARY KEY,
 	tyre_size            varchar(10)  NOT NULL    ,
 	brand_id             int  NOT NULL    ,
-	quantity             int  NOT NULL    
+	quantity             int  NOT NULL    ,
+	CONSTRAINT unq_stock UNIQUE ( tyre_size, brand_id ) 
  );
 
 CREATE INDEX brand_id ON office_database.stock ( brand_id );
-
-CREATE INDEX idx_stock ON office_database.stock ( tyre_size, brand_id );
 
 CREATE TABLE office_database.transactions ( 
 	transaction_id       int  NOT NULL  AUTO_INCREMENT  PRIMARY KEY,
@@ -77,6 +76,7 @@ CREATE TABLE office_database.transactions (
 	is_payment_done      boolean  NOT NULL    ,
 	payment_id           varchar(100)      ,
 	amount               int  NOT NULL    ,
+	comment              varchar(200)      ,
 	CONSTRAINT service_type UNIQUE ( service_type ) 
  );
 
@@ -167,16 +167,4 @@ INSERT INTO office_database.tyre_brand( brand_id, brand_name ) VALUES ( 7, 'yako
 INSERT INTO office_database.vehicles( vehicle_number, car_model_name, customer_id, last_visit ) VALUES ( '100', 'a', 20, null);
 INSERT INTO office_database.vehicles( vehicle_number, car_model_name, customer_id, last_visit ) VALUES ( '86779', null, 28, null);
 INSERT INTO office_database.vehicles( vehicle_number, car_model_name, customer_id, last_visit ) VALUES ( 'A', null, 27, null);
-INSERT INTO office_database.stock( tyre_id, tyre_size, brand_id, quantity ) VALUES ( 1, '145/70R12', 1, 1);
-INSERT INTO office_database.stock( tyre_id, tyre_size, brand_id, quantity ) VALUES ( 2, '145/70R12', 2, 2);
-INSERT INTO office_database.stock( tyre_id, tyre_size, brand_id, quantity ) VALUES ( 3, '145/70R13', 3, 3);
-INSERT INTO office_database.stock( tyre_id, tyre_size, brand_id, quantity ) VALUES ( 4, '145/70R13', 4, 4);
-INSERT INTO office_database.stock( tyre_id, tyre_size, brand_id, quantity ) VALUES ( 5, '185/65R15', 1, 5);
-INSERT INTO office_database.stock( tyre_id, tyre_size, brand_id, quantity ) VALUES ( 6, '185/65R15', 2, 6);
-INSERT INTO office_database.stock( tyre_id, tyre_size, brand_id, quantity ) VALUES ( 7, '185/65R16', 3, 7);
-INSERT INTO office_database.stock( tyre_id, tyre_size, brand_id, quantity ) VALUES ( 8, '185/65R16', 4, 8);
-INSERT INTO office_database.stock( tyre_id, tyre_size, brand_id, quantity ) VALUES ( 9, '205/65R15', 1, 9);
-INSERT INTO office_database.stock( tyre_id, tyre_size, brand_id, quantity ) VALUES ( 10, '205/65R15', 2, 10);
-INSERT INTO office_database.stock( tyre_id, tyre_size, brand_id, quantity ) VALUES ( 11, '205/65R15', 3, 11);
-INSERT INTO office_database.stock( tyre_id, tyre_size, brand_id, quantity ) VALUES ( 12, '205/65R15', 4, 12);
-INSERT INTO office_database.stock( tyre_id, tyre_size, brand_id, quantity ) VALUES ( 13, '215/65R15', 1, 13);
+INSERT INTO office_database.stock( tyre_id, tyre_size, brand_id, quantity ) VALUES ( 19, 'abcd', 5, 0);
