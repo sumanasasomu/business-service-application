@@ -121,14 +121,16 @@ def registerPayment():
                 eachTyrePrice = data.get('tyrePrice')
                 amount = quantity*eachTyrePrice
                 tyreBrand = data.get('tyreBrand')
+                cur.execute("select brand_id from tyre_brand where tyre_brand.brand_name = \'{}\'".format(tyreBrand))
+                res = cur.fetchall()
+                print(res)
                 cur.execute("""
-                                replace into stock (tyre_size, brand_id, quantity)
-                                select \'{}\' as tyre_size, tyre_brand.brand_id, ifnull(max(quantity), 0)
-                                from stock, tyre_brand
-                                where tyre_brand.brand_id = stock.brand_id
+                                insert ignore into stock (tyre_size, brand_id, quantity)
+                                select \'{}\' as tyre_size, {}, ifnull(max(quantity), 0)
+                                from stock
+                                where stock.brand_id = {}
                                 and tyre_size = \'{}\'
-                                and tyre_brand.brand_name = \'{}\'
-                            """.format(tyreSize, tyreSize, tyreBrand))
+                            """.format(tyreSize, res[0][0], res[0][0], tyreSize))
                 conn.commit()
                 cur.execute("select tyre_id from stock, tyre_brand where tyre_size=\'{}\' \
 								and stock.brand_id = tyre_brand.brand_id \
