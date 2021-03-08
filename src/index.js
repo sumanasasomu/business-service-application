@@ -20,7 +20,9 @@ const routing = (
 )
 
 ReactDOM.render(
-  routing,
+  <React.StrictMode>
+      <App />
+  </React.StrictMode>,
   document.getElementById('root')
 );
 
