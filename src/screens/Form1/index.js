@@ -1,11 +1,11 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import MyCheckbox from '../../components/checkBox'
 import MyForm from '../../components/MyForm';
 import axios from 'axios';
 import { actions } from 'reducers/store1';
 import { connect } from 'react-redux';
 import { bindActionCreators } from 'redux';
-import { themeColors } from 'utils/constants';
+import { backgroundImage, themeColors } from 'utils/constants';
 import appolo from '../../assets/appolo.jpg'
 import { useHistory } from 'react-router-dom';
 import "./Styles.css"
@@ -23,30 +23,6 @@ function mapDispatchToProps(dispatch) {
 const Form1 = (props) => {
   let history = useHistory();
 
-  console.log("props from Form1", props)
-  const [state, setState] = React.useState({
-    alignment: true,
-    balancing: false,
-    tyres: false
-  });
-  const handleInputChange = (event) => {
-    setState({ ...state, [event.target.name]: event.target.value });
-  }
-  const handleCheckboxChange = (event) => {
-    setState({ ...state, [event.target.name]: event.target.checked });
-  };
-  const onSubmitForm = (e) => {
-    e.stopPropagation();
-    const services = `${Number(state.alignment)}${Number(state.balancing)}${Number(state.tyres)}`
-    props.actions.writeForm1Responses(state)
-    console.log("Writing form1 responses", props.form1Responses)
-    axios.get('http://127.0.0.1:5000/api/hello')
-        .then(response => console.log("Response is ", response.data));
-    axios.post('http://127.0.0.1:5000/api/hola', state).then(response => {
-      // window.location.href = "/form2"
-      history.push(`/form2/${services}`)
-    })
-  }
   const getCurrentDateAndTime = () => {
     const today = new Date();
     const month = today.getMonth() + 1
@@ -57,6 +33,78 @@ const Form1 = (props) => {
     const date = `${today.getFullYear()}-${month > 9 ? '' : 0}${month}-${day > 9 ? '' : 0}${day}`; 
     const time = `${hour > 9 ? '' : 0}${hour}:${min > 9 ? '' : 0}${min}`;
     return (`${date}T${time}`)
+  }
+
+  const [state, setState] = React.useState({
+    alignment: true,
+    balancing: false,
+    tyres: false,
+    timestamp: getCurrentDateAndTime()
+  });
+
+  const [errors, setErrors] = React.useState({})
+  const [validateErrors, setValidateErrors] = React.useState(false)
+
+  const handleInputChange = (event) => {
+    setState({ ...state, [event.target.name]: event.target.value });
+  }
+  const handleCheckboxChange = (event) => {
+    setState({ ...state, [event.target.name]: event.target.checked });
+  };
+
+  useEffect(() => {
+    validate('customer-name')
+  }, [state['customer-name']])
+
+  useEffect(() => {
+    validate('customer-phone')
+  }, [state['customer-phone']])
+
+  useEffect(() => {
+    validate('vehicle-number')
+  }, [state['vehicle-number']])
+
+  const validate = (field) => {
+    console.log("error state", errors)
+    if (field && validateErrors) {
+      const prevState = errors;
+      setErrors(({...prevState, [field]: !state?.[field]}))
+    }
+    else if(!field){
+      const nameError = !state?.['customer-name'];
+      const phoneError = !state?.['customer-phone'];
+      const vehicleNumber = !state?.['vehicle-number'];
+      const errorStates = {
+        'customer-name': nameError,
+        'customer-phone': phoneError,
+        'vehicle-number': vehicleNumber
+      }
+      const isFormValid = !(nameError || phoneError || vehicleNumber)
+      setErrors(errorStates)
+      return isFormValid
+    }
+  }
+  const onSubmitForm = (e) => {
+    e.stopPropagation();
+    setValidateErrors(true)
+    const isFormValid = validate();
+    if(isFormValid){
+      const services = `${Number(state.alignment)}${Number(state.balancing)}${Number(state.tyres)}`
+      const reqMsg = {
+        customerName: state?.['customer-name'],
+        customerPhone: state?.['customer-phone'],
+        customerEmail: state?.['customer-email'],
+        vehicleNumber: state?.['vehicle-number'],
+        vehicleModel: state?.['vehicle-model'],
+        timeStamp: state?.['timestamp'],
+        services: services
+      }
+      axios.post('http://127.0.0.1:5000/api/customer', reqMsg).then(response => {
+        history.push(`/form2/${services}`)
+      }).catch((error) => {
+        alert(`Failed to proceed :( Please check the entries. \n${error}`)
+      })
+    }
   }
   const s = {
     containerStyle: {
@@ -84,7 +132,8 @@ const Form1 = (props) => {
         label: "Customer name",
         otherProps: {
           required: true,
-          variant: "outlined"  
+          variant: "outlined",
+          error: errors?.['customer-name'],
         }
       },
       {
@@ -97,7 +146,8 @@ const Form1 = (props) => {
         label: "Customer phone",
         otherProps: {
           required: true,
-          variant: "outlined"  
+          variant: "outlined",
+          error: errors['customer-phone'],
         }
       },
       {
@@ -109,8 +159,7 @@ const Form1 = (props) => {
         id: "customer-email",
         label: "Customer email",
         otherProps: {
-          required: true,
-          variant: "outlined"  
+          variant: "outlined"
         }
       },
       {
@@ -123,7 +172,8 @@ const Form1 = (props) => {
         label: "Vehicle number",
         otherProps: {
           required: true,
-          variant: "outlined"  
+          variant: "outlined",
+          error:  errors['vehicle-number'],
         }
       },
       {
@@ -141,7 +191,7 @@ const Form1 = (props) => {
       {
         component: MyTextField,
         type: 'text-field',
-        name: 'dateAndTime',
+        name: 'timestamp',
         onChange: handleInputChange, 
         id: "datetime-customer",
         label: "Purchase or Service Date and Time",
@@ -203,7 +253,6 @@ const Form1 = (props) => {
   const buttons = [
     {
       variant: "contained",
-      // color: "primary",
       style: s.sendButton,
       onClick: onSubmitForm,
       text: "Next"
@@ -213,8 +262,8 @@ const Form1 = (props) => {
   return (
     <>
       <div className={"form-page"}>
+        <img className={"background-image"} src={backgroundImage}/>
         <img className={"logo-image"} height={200} src={appolo} alt={"company-logo"}/>
-        {/* <div className={"page-title"}>{COMPANY_NAME}</div> */}
         <MyForm containerStyle={s.containerStyle} onSubmitForm={onSubmitForm} fields={fields} buttons={buttons}/>
       </div>
     </>

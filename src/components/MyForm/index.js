@@ -8,12 +8,15 @@ const getSection = (section, index) => {
     return section.component
   }
   const _elements = section.elements.map((F, index) => {
-    if(F.renderAsIs !== true){
-      return <F.component key={F.id} name={F.name} onChange={F.onChange} style={F.style} id={F.id} label={F.label} {...F.otherProps}/>
+    if(F){
+      if(F.renderAsIs !== true){
+        return <F.component key={F.id} name={F.name} onChange={F.onChange} style={F.style} id={F.id} label={F.label} {...F.otherProps}/>
+      }
+      else{
+        return (F.component)
+      }
     }
-    else{
-      return (F.component)
-    }
+    return null
   })
   if(section?.wrapperStyle){
     return (
@@ -41,7 +44,7 @@ const MyForm = (props) => {
   } = props;
   return (
     <>
-      <form onSubmit={onSubmitForm} className={"home-form"} noValidate autoComplete="off">
+      <form onSubmit={onSubmitForm} className={"home-form"} autoComplete="off">
         {fields.map((section, index) => getSection(section, index))}
         {buttons.map((eachBtn, index) => getButton(eachBtn, index))}
       </form>

@@ -4,7 +4,7 @@ import axios from 'axios';
 import { actions } from 'reducers/store1';
 import { connect } from 'react-redux';
 import { bindActionCreators } from 'redux';
-import { themeColors } from 'utils/constants';
+import { backgroundImage, themeColors } from 'utils/constants';
 import appolo from '../../assets/appolo.jpg'
 import MyRadioButtons from 'components/RadioButton';
 import { useHistory, useParams } from 'react-router-dom';
@@ -25,18 +25,29 @@ const Form2 = (props) => {
   const { services } = useParams();
   const [state, setState] = React.useState({
     paymentStatus: '0',
-    paymentMethod: 'cash',
-    totalAmount: 0
+    paymentMode: '2',
+    totalAmount: 0,
+    tyreBrand: '1',
+    'tyre-quantity': '1',
   });
+  const [brands, setBrands] = React.useState([])
 
   const getTotalAmount = (values) => {
-    console.log("CALCULATING....")
     let total = 0;
-    const tyresCost = parseInt(values?.['price-each-tyre'] || 0 ) * parseInt(values?.['tyre-quantity'] || 0)
-    total = tyresCost + parseInt(values?.['alignment-cost'] || 0) + parseInt(values?.['balancing-cost'] || 0)
-    console.log("Total is ", total)
+    const tyresCost = parseFloat(values?.['price-each-tyre'] || 0 ) * parseFloat(values?.['tyre-quantity'] || 0)
+    total = tyresCost + parseFloat(values?.['alignment-cost'] || 0) + parseFloat(values?.['balancing-cost'] || 0)
     return total;
   }
+
+  useEffect(() => {
+    axios.get('http://127.0.0.1:5000/api/brands').then((response) => {
+      if(response.status === 200){
+        setBrands(response.data)
+      }     
+    }).catch((error) => {
+      console.log("Couldn't fetch Brandse", error)
+    })
+  }, [])
 
   useEffect(() => {
     const totalAmt = getTotalAmount(state)
@@ -50,19 +61,29 @@ const Form2 = (props) => {
     setState({ ...state, paymentStatus: event.target.value });
   };
   const handlePaymentMethodChange = (event) => {
-    setState({ ...state, paymentMethod: event.target.value });
+    setState({ ...state, paymentMode: event.target.value });
+  };
+  const handleBrandChange = (event) => {
+    setState({ ...state, tyreBrand: event.target.value });
   };
   const onSubmitForm = (e) => {
     e.stopPropagation();
-    props.actions.writeForm1Responses(state)
-    console.log("Writing form1 responses", props.form1Responses)
-    axios.get('http://127.0.0.1:5000/api/hello')
-        .then(response => console.log("Response is ", response.data));
-    axios.post('http://127.0.0.1:5000/api/hola', state).then(response => {
+    const reqMsg = {
+      tyreSize: state?.['tyre-size'],
+      tyreQuantity: state?.['tyre-quantity'],
+      priceEachTyre: state?.['price-each-tyre'],
+      alignmentCost: state?.['alignment-cost'],
+      balancingCost: state?.['balancing-cost'],
+      paymentStatus: state?.['paymentStatus'],
+      paymentMode: state?.['paymentMode'],
+      paymentID: state?.['payment-id'],
+      comment: state?.['comment']
+    }
+    axios.post('http://127.0.0.1:5000/api/hola', reqMsg).then(response => {
       alert("Submitted!")
       history.push(`/`)
-    }).catch(() => {
-      alert("Failed to submit :( Please check the entries.")
+    }).catch((error) => {
+      alert(`Failed to submit :( Please check the entries. \n${error}`)
     })
   }
   const s = {
@@ -70,6 +91,8 @@ const Form2 = (props) => {
       margin: 8,
       display: "flex"
     },
+    marginWidth: { margin: 8, width: 500 },
+    marginWidthHigh: { margin: 16, width: 500 },
     textInputFieldStyle: { margin: 8, width: 500 },
     dateInputFieldStyle: { margin: 8, marginTop: 16, width: 500 },
     checkboxFieldStyle: { marginBottom: 4, width: 500 },
@@ -94,7 +117,21 @@ const Form2 = (props) => {
       backgroundColor: themeColors.tertiary
     }
   }
-  const commonFields = [{
+  const brandsField = {
+    component: (
+      <MyDropDown
+        label={"Tyre Brand"}
+        value={state.tyreBrand}
+        onChange={handleBrandChange}
+        containerStyle={s.marginWidth}
+        labelStyle={s.labelStyle}
+        options={brands}
+      />
+    ),
+    renderAsIs: true
+  }
+  const tyreFields = [
+  {
     component: MyTextField,
     type: 'text-field',
     name: 'tyre-size',
@@ -117,7 +154,8 @@ const Form2 = (props) => {
     label: "Tyre quantity",
     otherProps: {
       required: true,
-      variant: "outlined"  
+      variant: "outlined",
+      defaultValue: "1"
     }
   },
   {
@@ -142,7 +180,7 @@ const Form2 = (props) => {
           name={"payment-status"}
           value={state.paymentStatus}
           onChange={handlePaymentStatusChange}
-          containerStyle={s.containerStyle}
+          containerStyle={s.marginWidth}
           labelStyle={s.labelStyle}
           groupStyle={s.groupStyle}
           radios={[
@@ -164,41 +202,41 @@ const Form2 = (props) => {
     component: (
       <MyDropDown
         label={"Payment method"}
-        value={state.paymentMethod}
+        value={state.paymentMode}
         onChange={handlePaymentMethodChange}
-        containerStyle={s.containerStyle}
+        containerStyle={s.marginWidth}
         labelStyle={s.labelStyle}
         options={[
           {
-            value: "cash",
-            label: "Cash"
-          },
-          {
-            value: "gpay",
-            label: "Google pay"
-          },
-          {
-            value: 'phonepe',
-            label: 'PhonePe'
-          },
-          {
-            value: 'paytm',
-            label: 'PayTM'
-          },
-          {
-            value: 'card',
+            value: '1',
             label: 'Card'
           },
           {
-            value: 'cheque',
+            value: "2",
+            label: "Cash"
+          },
+          {
+            value: '3',
             label: 'Cheque'
+          },
+          {
+            value: "4",
+            label: "Google pay"
+          },
+          {
+            value: '5',
+            label: 'PayTM'
+          },
+          {
+            value: '6',
+            label: 'PhonePe'
           }
         ]}
       />
     ),
     renderAsIs: true
   }
-  const paymentID = {
+  const paymentIDField = {
     component: MyTextField,
     type: 'text-field',
     name: 'payment-id',
@@ -216,11 +254,14 @@ const Form2 = (props) => {
   if(state.paymentStatus === '1'){
     paymentFields.push(paymentMethod)
   }
-  if(state.paymentStatus === '1' && paymentIdRequired.includes(state.paymentMethod)){
-    paymentFields.push(paymentID)
+  if(state.paymentStatus === '1' && paymentIdRequired.includes(state.paymentMode)){
+    paymentFields.push(paymentIDField)
   }
 
   let conditionalFields = []
+  if(services[2] === '1') {
+    conditionalFields = conditionalFields.concat(tyreFields)
+  }
   if(services[0] === '1') {
     conditionalFields.push({
       component: MyTextField,
@@ -257,7 +298,7 @@ const Form2 = (props) => {
       <MyTextField
         id={"toatl-amount"}
         label={"Total Amount"}
-        style={{...s.textInputFieldStyle, ...s.disabledStyle}}
+        style={{...s.marginWidthHigh, ...s.disabledStyle}}
         variant={"outlined"}
         value={`Rs. ${totalAmount}/-`}
         InputProps={{
@@ -270,7 +311,7 @@ const Form2 = (props) => {
   const fields = [
     {
       elements: [
-        ...commonFields,
+        (brands.length > 0) && brandsField,
         ...conditionalFields,
         ...paymentFields,
         totalAmountField
@@ -290,8 +331,8 @@ const Form2 = (props) => {
   return (
     <>
       <div className={"form-page"}>
+        <img className={"background-image"} src={backgroundImage}/>
         <img className={"logo-image"} height={200} src={appolo} alt={"company-logo"}/>
-        {/* <div className={"page-title"}>{COMPANY_NAME}</div> */}
         <MyForm containerStyle={s.containerStyle} onSubmitForm={onSubmitForm} fields={fields} buttons={buttons}/>
       </div>
     </>

@@ -1,13 +1,8 @@
 import React from 'react';
-import FormControlLabel from '@material-ui/core/FormControlLabel';
 import { themeColors } from '../../utils/constants'
 import { withStyles } from '@material-ui/core/styles';
-import Radio from '@material-ui/core/Radio';
-import RadioGroup from '@material-ui/core/RadioGroup';
 import FormControl from '@material-ui/core/FormControl';
-import FormLabel from '@material-ui/core/FormLabel';
 import { InputLabel, MenuItem, Select } from '@material-ui/core';
-import { optionProperties } from '@fluentui/utilities';
 
 export default function MyDropDown(props) {
   const PrimaryMenu = withStyles({
