@@ -1,14 +1,15 @@
 import React from 'react';
-import { TextField } from '@material-ui/core';
 import MyCheckbox from '../../components/checkBox'
 import MyForm from '../../components/MyForm';
 import axios from 'axios';
-import "./Styles.css"
 import { actions } from 'reducers/store1';
 import { connect } from 'react-redux';
 import { bindActionCreators } from 'redux';
 import { themeColors } from 'utils/constants';
 import appolo from '../../assets/appolo.jpg'
+import { useHistory } from 'react-router-dom';
+import "./Styles.css"
+import { MyTextField } from 'components/TextField';
 
 function mapStateToProps(state) {
   return state
@@ -20,27 +21,30 @@ function mapDispatchToProps(dispatch) {
 }
 
 const Form1 = (props) => {
+  let history = useHistory();
+
   console.log("props from Form1", props)
   const [state, setState] = React.useState({
     alignment: true,
-    tyres: false,
-    balancing: false
+    balancing: false,
+    tyres: false
   });
   const handleInputChange = (event) => {
     setState({ ...state, [event.target.name]: event.target.value });
   }
   const handleCheckboxChange = (event) => {
-    console.log("Handle checkbox change")
     setState({ ...state, [event.target.name]: event.target.checked });
   };
-  const onSubmitForm = () => {
+  const onSubmitForm = (e) => {
+    e.stopPropagation();
+    const services = `${Number(state.alignment)}${Number(state.balancing)}${Number(state.tyres)}`
     props.actions.writeForm1Responses(state)
+    console.log("Writing form1 responses", props.form1Responses)
     axios.get('http://127.0.0.1:5000/api/hello')
         .then(response => console.log("Response is ", response.data));
     axios.post('http://127.0.0.1:5000/api/hola', state).then(response => {
-      props.actions.updateAskForModel(response.data.result);
-      console.log("Response is ", response.data.result)
-      window.location.href = "/form2"
+      // window.location.href = "/form2"
+      history.push(`/form2/${services}`)
     })
   }
   const getCurrentDateAndTime = () => {
@@ -71,7 +75,7 @@ const Form1 = (props) => {
   const fields = [
     {
       elements: [{
-        component: TextField,
+        component: MyTextField,
         type: 'text-field',
         name: 'customer-name',
         onChange: handleInputChange, 
@@ -84,7 +88,7 @@ const Form1 = (props) => {
         }
       },
       {
-        component: TextField,
+        component: MyTextField,
         type: 'text-field',
         name: 'customer-phone',
         onChange: handleInputChange, 
@@ -97,7 +101,7 @@ const Form1 = (props) => {
         }
       },
       {
-        component: TextField,
+        component: MyTextField,
         type: 'text-field',
         name: 'customer-email',
         onChange: handleInputChange, 
@@ -110,7 +114,7 @@ const Form1 = (props) => {
         }
       },
       {
-        component: TextField,
+        component: MyTextField,
         type: 'text-field',
         name: 'vehicle-number',
         onChange: handleInputChange, 
@@ -123,7 +127,7 @@ const Form1 = (props) => {
         }
       },
       {
-        component: TextField,
+        component: MyTextField,
         type: 'text-field',
         name: 'vehicle-model',
         onChange: handleInputChange,
@@ -135,7 +139,7 @@ const Form1 = (props) => {
         }
       },
       {
-        component: TextField,
+        component: MyTextField,
         type: 'text-field',
         name: 'dateAndTime',
         onChange: handleInputChange, 
@@ -171,17 +175,6 @@ const Form1 = (props) => {
         {
           component: MyCheckbox,
           type: 'check-box',
-          name: 'tyres',
-          style: s.checkboxFieldStyle,
-          label: "Tyres",
-          otherProps: {
-            isChecked: state.tyres || false,
-            handleCheckboxChange: handleCheckboxChange
-          }
-        },
-        {
-          component: MyCheckbox,
-          type: 'check-box',
           name: 'balancing',
           handleCheckboxChange: handleCheckboxChange, 
           style: s.checkboxFieldStyle,
@@ -189,6 +182,17 @@ const Form1 = (props) => {
           label: "Balancing",
           otherProps: {
             isChecked: state.balancing || false,
+            handleCheckboxChange: handleCheckboxChange
+          }
+        },
+        {
+          component: MyCheckbox,
+          type: 'check-box',
+          name: 'tyres',
+          style: s.checkboxFieldStyle,
+          label: "Tyres",
+          otherProps: {
+            isChecked: state.tyres || false,
             handleCheckboxChange: handleCheckboxChange
           }
         }

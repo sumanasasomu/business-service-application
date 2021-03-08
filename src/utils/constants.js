@@ -4,7 +4,8 @@ export const themeColors = {
     apollo: "#5a2c84",
     white: "#ffffff",
     primary: "#5a2c84",
-    secondary: "#a78abe"
+    secondary: "#a78abe",
+    tertiary: "#f2ebf7"
 }
 export const statePrototype = {
     form1Responses: {},

@@ -4,9 +4,17 @@ import Button from '@material-ui/core/Button';
 import './Styles.css'
 
 const getSection = (section, index) => {
-  const _elements = section.elements.map((f) => (
-    <f.component key={f.id} name={f.name} onChange={f.onChange} style={f.style} id={f.id} label={f.label} {...f.otherProps}/>
-  ))
+  if(section.renderAsIs === true){
+    return section.component
+  }
+  const _elements = section.elements.map((F, index) => {
+    if(F.renderAsIs !== true){
+      return <F.component key={F.id} name={F.name} onChange={F.onChange} style={F.style} id={F.id} label={F.label} {...F.otherProps}/>
+    }
+    else{
+      return (F.component)
+    }
+  })
   if(section?.wrapperStyle){
     return (
       <div key={index} style={section?.wrapperStyle}>

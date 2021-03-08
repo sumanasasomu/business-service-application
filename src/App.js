@@ -2,20 +2,19 @@ import React from 'react';
 import './App.css';
 
 import Form1 from 'screens/Form1';
-
-// const linking = {
-//   prefixes: ['https://localhost:3000'],
-//   config: {
-//     screens: {
-//       Form1: '',
-//       Form2: '/form2',
-//     }
-//   },
-// };
+import { Route, Switch } from 'react-router-dom';
+import Form2 from 'screens/Form2';
 
 function App(props) {
   return (
-    <Form1 {...props}/>
+    <Switch>
+      <Route path="/form2/:services">
+        <Form2 />
+      </Route>
+      <Route path="/">
+        <Form1 />
+      </Route>
+    </Switch>
   );
 }
 

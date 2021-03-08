@@ -15,7 +15,6 @@ def say_hello_world():
 def say_hola_world():
     if request.method == 'POST':
         formState = json.loads(request.data)
-        print('The form value for alignment is', formState['alignment'])
         return {'result': "1"}
 
 # FLASK_APP=server.py flask run

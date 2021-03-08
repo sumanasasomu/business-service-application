@@ -30,6 +30,7 @@ export default function configureStore(initialState = statePrototype) {
 
 export const actions = {
   writeForm1Responses: function(responses) {
+    console.log("Actions dispaching")
     return {
       type: "FORM1_RESPONSES",
       values: responses
