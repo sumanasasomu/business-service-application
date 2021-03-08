@@ -96,11 +96,16 @@ const Form1 = (props) => {
         customerEmail: state?.['customer-email'],
         vehicleNumber: state?.['vehicle-number'],
         vehicleModel: state?.['vehicle-model'],
-        timeStamp: state?.['timestamp'],
+        date: state?.['timestamp'],
         services: services
       }
       axios.post('http://127.0.0.1:5000/api/customer', reqMsg).then(response => {
-        history.push(`/form2/${services}`)
+        if(response.data.result === 'success' ){
+          history.push(`/form2/${services}`)
+        }
+        else {
+          alert(`Failed to proceed :( Please check the entries.`)
+        }
       }).catch((error) => {
         alert(`Failed to proceed :( Please check the entries. \n${error}`)
       })

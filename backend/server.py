@@ -97,7 +97,7 @@ def registerPayment():
             customer_id = session.get('customer_id')
             services = customer_session_details.get('services')
             isTyreSale = True if services%2 != 0 else False
-            payment_type = data.get('payment_type')
+            payment_type = data.get('paymentMode')
             isPaymentDone = data.get('isPaymentDone')
             paymentId = data.get('paymentId')
             date = customer_session_details.get('date')
@@ -117,8 +117,8 @@ def registerPayment():
             transaction_id = cur.fetchall()[0][0]
             if isTyreSale:
                 tyreSize = data.get('tyreSize')
-                quantity = data.get('numTyres')
-                eachTyrePrice = data.get('tyrePrice')
+                quantity = data.get('tyreQuantity')
+                eachTyrePrice = data.get('priceEachTyre')
                 amount = quantity*eachTyrePrice
                 tyreBrand = data.get('tyreBrand')
                 cur.execute("select brand_id from tyre_brand where tyre_brand.brand_name = \'{}\'".format(tyreBrand))

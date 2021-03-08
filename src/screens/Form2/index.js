@@ -24,7 +24,7 @@ const Form2 = (props) => {
   let history = useHistory();
   const { services } = useParams();
   const [state, setState] = React.useState({
-    paymentStatus: '0',
+    isPaymentDone: '0',
     paymentMode: '2',
     totalAmount: 0,
     tyreBrand: '1',
@@ -43,22 +43,23 @@ const Form2 = (props) => {
     axios.get('http://127.0.0.1:5000/api/brands').then((response) => {
       if(response.status === 200){
         setBrands(response.data)
-      }     
+      }
     }).catch((error) => {
       console.log("Couldn't fetch Brandse", error)
     })
   }, [])
 
+  const totalAmtdependencies = [state['alignment-cost'], state['balancing-cost'], state['tyre-quantity'], state['price-each-tyre']]
   useEffect(() => {
     const totalAmt = getTotalAmount(state)
     setState((prevState) => ({...prevState, totalAmount: totalAmt}))
-  }, [state['alignment-cost'], state['balancing-cost'], state['tyre-quantity'], state['price-each-tyre']])
+  }, totalAmtdependencies)
 
   const handleInputChange = (event) => {
     setState({ ...state, [event.target.name]: event.target.value });
   }
-  const handlePaymentStatusChange = (event) => {
-    setState({ ...state, paymentStatus: event.target.value });
+  const handleisPaymentDoneChange = (event) => {
+    setState({ ...state, isPaymentDone: event.target.value });
   };
   const handlePaymentMethodChange = (event) => {
     setState({ ...state, paymentMode: event.target.value });
@@ -71,17 +72,22 @@ const Form2 = (props) => {
     const reqMsg = {
       tyreSize: state?.['tyre-size'],
       tyreQuantity: state?.['tyre-quantity'],
+      tyreBrand: status?.['tyreBrand'],
       priceEachTyre: state?.['price-each-tyre'],
-      alignmentCost: state?.['alignment-cost'],
-      balancingCost: state?.['balancing-cost'],
-      paymentStatus: state?.['paymentStatus'],
+      isPaymentDone: state?.['isPaymentDone'],
       paymentMode: state?.['paymentMode'],
-      paymentID: state?.['payment-id'],
+      paymentId: state?.['payment-id'],
+      totalAmount: state?.['totalAmount'],
       comment: state?.['comment']
     }
-    axios.post('http://127.0.0.1:5000/api/hola', reqMsg).then(response => {
-      alert("Submitted!")
-      history.push(`/`)
+    axios.post('http://127.0.0.1:5000/api/paymentPage', reqMsg).then(response => {
+      if(response.data.result === 'success' ){
+        alert("Submitted!")
+        history.push(`/`)
+      }
+      else {
+        alert(`Failed to submit :( Please check the entries.`)
+      }
     }).catch((error) => {
       alert(`Failed to submit :( Please check the entries. \n${error}`)
     })
@@ -178,8 +184,8 @@ const Form2 = (props) => {
         <MyRadioButtons
           formLabel={'Payment done?'}
           name={"payment-status"}
-          value={state.paymentStatus}
-          onChange={handlePaymentStatusChange}
+          value={state.isPaymentDone}
+          onChange={handleisPaymentDoneChange}
           containerStyle={s.marginWidth}
           labelStyle={s.labelStyle}
           groupStyle={s.groupStyle}
@@ -251,10 +257,10 @@ const Form2 = (props) => {
   }
   const paymentIdRequired = ['gpay', 'phonepe', 'card', 'paytm']
 
-  if(state.paymentStatus === '1'){
+  if(state.isPaymentDone === '1'){
     paymentFields.push(paymentMethod)
   }
-  if(state.paymentStatus === '1' && paymentIdRequired.includes(state.paymentMode)){
+  if(state.isPaymentDone === '1' && paymentIdRequired.includes(state.paymentMode)){
     paymentFields.push(paymentIDField)
   }
 
