@@ -76,8 +76,7 @@ CREATE TABLE office_database.transactions (
 	is_payment_done      boolean  NOT NULL    ,
 	payment_id           varchar(100)      ,
 	amount               int  NOT NULL    ,
-	comment              varchar(200)      ,
-	CONSTRAINT service_type UNIQUE ( service_type ) 
+	comment              varchar(200)
  );
 
 CREATE INDEX customer_id ON office_database.transactions ( customer_id );

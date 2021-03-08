@@ -40,7 +40,7 @@ const Form2 = (props) => {
   }
 
   useEffect(() => {
-    axios.get('http://127.0.0.1:5000/api/brands').then((response) => {
+    axios.get('http://127.0.0.1:5002/api/brands').then((response) => {
       if(response.status === 200){
         setBrands(response.data)
       }
@@ -72,7 +72,7 @@ const Form2 = (props) => {
     const reqMsg = {
       tyreSize: state?.['tyre-size'],
       tyreQuantity: state?.['tyre-quantity'],
-      tyreBrand: status?.['tyreBrand'],
+      tyreBrand: state?.['tyreBrand'],
       priceEachTyre: state?.['price-each-tyre'],
       isPaymentDone: state?.['isPaymentDone'],
       paymentMode: state?.['paymentMode'],
@@ -80,7 +80,7 @@ const Form2 = (props) => {
       totalAmount: state?.['totalAmount'],
       comment: state?.['comment']
     }
-    axios.post('http://127.0.0.1:5000/api/paymentPage', reqMsg).then(response => {
+    axios.post('http://127.0.0.1:5002/api/paymentPage', reqMsg).then(response => {
       if(response.data.result === 'success' ){
         alert("Submitted!")
         history.push(`/`)
@@ -251,15 +251,15 @@ const Form2 = (props) => {
     id: 'payment-id',
     label: "Payment ID",
     otherProps: {
-      required: true,
       variant: "outlined"  
     }
   }
-  const paymentIdRequired = ['gpay', 'phonepe', 'card', 'paytm']
+  const paymentIdRequired = ['1','4','5','6']
 
   if(state.isPaymentDone === '1'){
     paymentFields.push(paymentMethod)
   }
+  console.log("Payemnt req", paymentIdRequired.includes(state.paymentMode));
   if(state.isPaymentDone === '1' && paymentIdRequired.includes(state.paymentMode)){
     paymentFields.push(paymentIDField)
   }
@@ -267,6 +267,9 @@ const Form2 = (props) => {
   let conditionalFields = []
   if(services[2] === '1') {
     conditionalFields = conditionalFields.concat(tyreFields)
+    if (brands.length > 0) {
+      conditionalFields.push(brandsField);
+    }
   }
   if(services[0] === '1') {
     conditionalFields.push({
@@ -317,7 +320,6 @@ const Form2 = (props) => {
   const fields = [
     {
       elements: [
-        (brands.length > 0) && brandsField,
         ...conditionalFields,
         ...paymentFields,
         totalAmountField

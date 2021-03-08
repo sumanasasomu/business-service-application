@@ -65,7 +65,6 @@ const Form1 = (props) => {
   }, [state['vehicle-number']])
 
   const validate = (field) => {
-    console.log("error state", errors)
     if (field && validateErrors) {
       const prevState = errors;
       setErrors(({...prevState, [field]: !state?.[field]}))
@@ -99,7 +98,8 @@ const Form1 = (props) => {
         date: state?.['timestamp'],
         services: services
       }
-      axios.post('http://127.0.0.1:5000/api/customer', reqMsg).then(response => {
+      console.log("Reqmsg", reqMsg)
+      axios.post('http://127.0.0.1:5002/api/customer', reqMsg).then(response => {
         if(response.data.result === 'success' ){
           history.push(`/form2/${services}`)
         }
