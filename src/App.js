@@ -1,5 +1,5 @@
+import React from 'react';
 import './App.css';
-import { BrowserRouter as Router, Route, Switch, Redirect} from 'react-router-dom'
 
 import Form1 from 'screens/Form1';
 import { Route, Switch } from 'react-router-dom';
